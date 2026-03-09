@@ -12,6 +12,7 @@ from typing import List, TextIO, cast, final
 from fairseq2.data.tokenizers import TokenDecoder, Tokenizer
 from fairseq2.datasets import Seq2SeqBatch
 from fairseq2.error import InternalError, raise_operational_system_error
+import torch
 from fairseq2.file_system import FileMode
 from fairseq2.logging import get_log_writer
 from fairseq2.metrics import MetricBag
@@ -187,6 +188,12 @@ class WerCalculator:
 
             # (S - blank)
             hyp_seq = hyp_seq[hyp_seq != self._blank_label]
+
+            # Early in training the model may predict only blanks, resulting in
+            # an empty sequence.  pad_seqs requires length >= 1, so substitute a
+            # single pad token (decoded to empty string by the tokenizer).
+            if hyp_seq.numel() == 0:
+                hyp_seq = torch.tensor([self._pad_idx], device=hyp_seq.device)
 
             hyp_seqs.append(hyp_seq)
 
