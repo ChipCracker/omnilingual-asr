@@ -93,6 +93,54 @@ def register_omnilingual_asr_wav2vec2_asr_configs(
 
         return config
 
+    @arch("300m_512", advanced=True)
+    def _300m_asr_512(resolver: DependencyResolver) -> Wav2Vec2AsrConfig:
+        config = get_config(resolver, Wav2Vec2AsrConfig, "base_10h")
+        config.encoder_config = get_config(
+            resolver, Wav2Vec2Config, "large_lv60k"
+        ).encoder_config
+        config.encoder_config.dropout_p = 0.0
+        config.encoder_config.attn_dropout_p = 0.0
+        config.encoder_config.ffn_inner_dropout_p = 0.1
+        config.encoder_config.layer_drop_p = 0.1
+        config.use_masking = False
+        config.max_temporal_mask_prob = 0.0
+        config.max_spatial_mask_prob = 0.0
+        config.target_vocab_size = 512
+        return config
+
+    @arch("300m_1024", advanced=True)
+    def _300m_asr_1024(resolver: DependencyResolver) -> Wav2Vec2AsrConfig:
+        config = get_config(resolver, Wav2Vec2AsrConfig, "base_10h")
+        config.encoder_config = get_config(
+            resolver, Wav2Vec2Config, "large_lv60k"
+        ).encoder_config
+        config.encoder_config.dropout_p = 0.0
+        config.encoder_config.attn_dropout_p = 0.0
+        config.encoder_config.ffn_inner_dropout_p = 0.1
+        config.encoder_config.layer_drop_p = 0.1
+        config.use_masking = False
+        config.max_temporal_mask_prob = 0.0
+        config.max_spatial_mask_prob = 0.0
+        config.target_vocab_size = 1024
+        return config
+
+    @arch("300m_2048", advanced=True)
+    def _300m_asr_2048(resolver: DependencyResolver) -> Wav2Vec2AsrConfig:
+        config = get_config(resolver, Wav2Vec2AsrConfig, "base_10h")
+        config.encoder_config = get_config(
+            resolver, Wav2Vec2Config, "large_lv60k"
+        ).encoder_config
+        config.encoder_config.dropout_p = 0.0
+        config.encoder_config.attn_dropout_p = 0.0
+        config.encoder_config.ffn_inner_dropout_p = 0.1
+        config.encoder_config.layer_drop_p = 0.1
+        config.use_masking = False
+        config.max_temporal_mask_prob = 0.0
+        config.max_spatial_mask_prob = 0.0
+        config.target_vocab_size = 2048
+        return config
+
     @arch("300m_v2", advanced=True)
     def _300m_asr_v2(resolver: DependencyResolver) -> Wav2Vec2AsrConfig:
         config = get_config(resolver, Wav2Vec2AsrConfig, "base_10h")

@@ -1,0 +1,35 @@
+# German BPE Tokenizers (3 vocab sizes)
+name: de_bpe_512
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/german_bpe_512.model
+
+---
+
+name: de_bpe_1024
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/german_bpe_1024.model
+
+---
+
+name: de_bpe_2048
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/german_bpe_2048.model
+
+---
+
+# Syllable BPE Tokenizers (3 vocab sizes)
+name: de_syllable_512
+tokenizer_family: syllable_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/syllable_bpe_512.model
+
+---
+
+name: de_syllable_1024
+tokenizer_family: syllable_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/syllable_bpe_1024.model
+
+---
+
+name: de_syllable_2048
+tokenizer_family: syllable_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/syllable_bpe_2048.model

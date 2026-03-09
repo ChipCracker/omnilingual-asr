@@ -6,8 +6,12 @@
 
 from __future__ import annotations
 
+from types import NoneType
+
 from fairseq2.composition.assets import register_package_assets
 from fairseq2.composition.models import register_model_family
+from fairseq2.composition.tokenizers import register_tokenizer_family
+from fairseq2.data.tokenizers.tokenizer import Tokenizer
 from fairseq2.runtime.dependency import DependencyContainer
 
 from omnilingual_asr.models.wav2vec2_asr.config import (
@@ -35,6 +39,22 @@ def setup_fairseq2_extension(container: DependencyContainer) -> None:
     register_package_assets(container, "omnilingual_asr.cards")
 
     _register_models(container)
+    _register_tokenizers(container)
+
+
+def _register_tokenizers(container: DependencyContainer) -> None:
+    from omnilingual_asr.tokenizers.syllable_tokenizer import (
+        SYLLABLE_TOKENIZER_FAMILY,
+        load_syllable_tokenizer,
+    )
+
+    register_tokenizer_family(
+        container,
+        SYLLABLE_TOKENIZER_FAMILY,
+        kls=Tokenizer,
+        config_kls=NoneType,
+        loader=load_syllable_tokenizer,
+    )
 
 
 def _register_models(container: DependencyContainer) -> None:
