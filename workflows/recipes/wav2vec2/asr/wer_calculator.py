@@ -6,9 +6,10 @@
 
 from __future__ import annotations
 
-from collections.abc import MutableMapping
+from collections.abc import Iterable, MutableMapping, Sequence
 from typing import List, TextIO, cast, final
 
+import editdistance
 from fairseq2.data.tokenizers import TokenDecoder, Tokenizer
 from fairseq2.datasets import Seq2SeqBatch
 from fairseq2.error import InternalError, raise_operational_system_error
@@ -20,7 +21,10 @@ from fairseq2.metrics.text import WerMetric
 from fairseq2.nn import BatchLayout
 from fairseq2.nn.utils.padding import pad_seqs
 from fairseq2.recipe.base import RecipeContext
+from fairseq2.utils.tensor import to_tensor
 from torch import Tensor
+from torcheval.metrics import Metric
+from typing_extensions import Self, override
 
 from omnilingual_asr.models.wav2vec2_llama.beamsearch import (
     Wav2Vec2LlamaBeamSearchSeq2SeqGenerator,
@@ -28,6 +32,49 @@ from omnilingual_asr.models.wav2vec2_llama.beamsearch import (
 from omnilingual_asr.models.wav2vec2_llama.syntax import ModalityInput
 
 log = get_log_writer(__name__)
+
+
+@final
+class CerMetric(Metric[Tensor]):
+    """Computes Character Error Rate (CER)."""
+
+    def __init__(self, *, device: torch.device | None = None) -> None:
+        super().__init__(device=device)
+
+        dtype = torch.int64
+
+        self.char_err: Tensor
+        self.char_len: Tensor
+
+        self._add_state("char_err", torch.zeros((), device=device, dtype=dtype))
+        self._add_state("char_len", torch.zeros((), device=device, dtype=dtype))
+
+    @override
+    @torch.inference_mode()
+    def update(self, refs: Sequence[str], hyps: Sequence[str]) -> Self:
+        for ref, hyp in zip(refs, hyps):
+            ref_chars = list(ref)
+            hyp_chars = list(hyp)
+
+            self.char_err += editdistance.eval(hyp_chars, ref_chars)
+            self.char_len += len(ref_chars)
+
+        return self
+
+    @override
+    @torch.inference_mode()
+    def compute(self) -> Tensor:
+        if self.char_len:
+            return self.char_err * 100.0 / self.char_len
+        return to_tensor(-1.0, dtype=torch.float32)
+
+    @override
+    @torch.inference_mode()
+    def merge_state(self, metrics: Iterable[CerMetric]) -> Self:
+        for metric in metrics:
+            self.char_err += metric.char_err.to(self.device)
+            self.char_len += metric.char_len.to(self.device)
+        return self
 
 
 @final
@@ -43,6 +90,7 @@ class WerCalculator:
     _hyp_output_stream: TextIO | None
     _wer_key: str = "wer"
     _uer_key: str = "uer"
+    _cer_key: str = "cer"
 
     def __init__(
         self,
@@ -160,6 +208,8 @@ class WerCalculator:
             hyp_seqs_layout,
         )
 
+        metric_bag.get(self._cer_key, CerMetric).update(refs, hyps)
+
         try:
             # Write transcriptions if streams are provided
             if self._ref_output_stream is not None:
@@ -201,10 +251,16 @@ class WerCalculator:
         return pad_seqs(hyp_seqs, pad_value=self._pad_idx)
 
     def process_metric_values(self, values: MutableMapping[str, object]) -> None:
-        """Optional update of wer/uer metric values if they are already populated"""
+        """Optional update of wer/uer/cer metric values if they are already populated"""
         value = values.pop(self._wer_key, None)
         if value is not None:
             uer, wer = cast(tuple[Tensor, Tensor], value)
             if uer >= 1.0 and wer >= 1.0:
                 values[self._uer_key] = uer
                 values[self._wer_key] = wer
+
+        cer_value = values.pop(self._cer_key, None)
+        if cer_value is not None:
+            cer = cast(Tensor, cer_value)
+            if cer >= 1.0:
+                values[self._cer_key] = cer
