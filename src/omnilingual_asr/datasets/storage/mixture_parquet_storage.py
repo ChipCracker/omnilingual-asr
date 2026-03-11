@@ -166,7 +166,33 @@ class MixtureParquetStorage(StorageInterface[MixtureParquetStorageConfig]):
     ) -> Tuple[pq.ParquetDataset, Set[str]]:
         """Discovers the available splits in the `pd.ParquetDataset(path, filesystem)` and returns them with the loaded dataset."""
         # ParquetDataset expects a str instead of pathlib.Path
-        dataset = pq.ParquetDataset(str(path), filesystem=filesystem)
+        try:
+            dataset = pq.ParquetDataset(str(path), filesystem=filesystem)
+        except pa.lib.ArrowTypeError:
+            # Schema conflict across fragments (e.g. string vs dictionary<string>).
+            # Build a unified schema from one fragment and retry.
+            first_file = next(path.rglob("*.parquet"))
+            physical_schema = pq.read_schema(str(first_file))
+
+            unified_fields: list[pa.Field] = []
+            for f in physical_schema:
+                if pa.types.is_dictionary(f.type):
+                    unified_fields.append(pa.field(f.name, f.type.value_type))
+                else:
+                    unified_fields.append(f)
+
+            # Add Hive partition columns not present in the physical schema
+            known = {f.name for f in unified_fields}
+            rel = first_file.relative_to(path)
+            for part in rel.parent.parts:
+                if "=" in part:
+                    col = part.split("=", 1)[0]
+                    if col not in known:
+                        unified_fields.append(pa.field(col, pa.string()))
+
+            dataset = pq.ParquetDataset(
+                str(path), filesystem=filesystem, schema=pa.schema(unified_fields)
+            )
 
         partition_columns: List[str] = []
         if dataset.partitioning is not None:
