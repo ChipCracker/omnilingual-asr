@@ -205,6 +205,11 @@ class Wav2Vec2AsrRecipe(TrainRecipe):
             unit, data_reader, valid_units, valid_data_readers
         )
 
+    @override
+    def has_static_autograd_graph(self, context: RecipeContext) -> bool:
+        config = context.config.as_(Wav2Vec2AsrRecipeConfig)
+        return config.trainer.freeze_encoder_for_n_steps == 0
+
     @property
     @override
     def config_kls(self) -> type[object]:
