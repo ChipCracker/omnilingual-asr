@@ -487,6 +487,17 @@ class MixtureParquetStorage(StorageInterface[MixtureParquetStorageConfig]):
     ) -> DataPipeline:
         """Convert Arrow tables to dictionaries with audio bytes as MemoryBlocks."""
 
+        # Deduplicate columns — partition cols may be added twice
+        # (once by PyArrow schema, once by fairseq2's add_partitioning_values)
+        seen: set[str] = set()
+        unique_indices: list[int] = []
+        for i, name in enumerate(table.column_names):
+            if name not in seen:
+                seen.add(name)
+                unique_indices.append(i)
+        if len(unique_indices) < table.num_columns:
+            table = table.select(unique_indices)
+
         # Convert table to pandas and then to dicts
         records = table.to_pandas(memory_pool=memory_pool, self_destruct=True).to_dict(
             orient="records"
