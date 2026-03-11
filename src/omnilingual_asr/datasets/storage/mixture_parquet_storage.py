@@ -130,6 +130,26 @@ class MixtureParquetStorageConfig(StorageConfig):
     """Mixture sampling seed."""
 
 
+class SchemaAwareFragmentStreamer(ParquetFragmentStreamer):
+    """ParquetFragmentStreamer that handles schema conflicts across parquet fragments."""
+
+    def _get_dataset(self) -> pq.ParquetDataset:
+        try:
+            return super()._get_dataset()
+        except pa.lib.ArrowTypeError:
+            # Schema conflict (e.g. string vs dictionary<string>).
+            # Build a unified schema from one fragment and retry.
+            paths = self.config.parquet_path
+            first_file = paths[0] if isinstance(paths, list) else paths
+            schema = MixtureParquetStorage.build_unified_schema(first_file)
+            return pq.ParquetDataset(
+                paths,
+                filters=self.partition_filters,
+                filesystem=self.filesystem,
+                schema=schema,
+            )
+
+
 class MixtureParquetStorage(StorageInterface[MixtureParquetStorageConfig]):
     """Mixture parquet storage implementation with partition weighting support.
     Enables to read multiple splits at the same time and sample respective to their weight
@@ -161,6 +181,18 @@ class MixtureParquetStorage(StorageInterface[MixtureParquetStorageConfig]):
         )
 
     @staticmethod
+    def build_unified_schema(parquet_file: str | Path) -> pa.Schema:
+        """Read a parquet file's schema and resolve dictionary-typed fields to plain types."""
+        physical_schema = pq.read_schema(str(parquet_file))
+        unified_fields: list[pa.Field] = []
+        for f in physical_schema:
+            if pa.types.is_dictionary(f.type):
+                unified_fields.append(pa.field(f.name, f.type.value_type))
+            else:
+                unified_fields.append(f)
+        return pa.schema(unified_fields)
+
+    @staticmethod
     def load_and_discover_splits(
         path: Path, filesystem: Any | None, split_column: str
     ) -> Tuple[pq.ParquetDataset, Set[str]]:
@@ -172,26 +204,21 @@ class MixtureParquetStorage(StorageInterface[MixtureParquetStorageConfig]):
             # Schema conflict across fragments (e.g. string vs dictionary<string>).
             # Build a unified schema from one fragment and retry.
             first_file = next(path.rglob("*.parquet"))
-            physical_schema = pq.read_schema(str(first_file))
-
-            unified_fields: list[pa.Field] = []
-            for f in physical_schema:
-                if pa.types.is_dictionary(f.type):
-                    unified_fields.append(pa.field(f.name, f.type.value_type))
-                else:
-                    unified_fields.append(f)
+            unified_schema = MixtureParquetStorage.build_unified_schema(first_file)
 
             # Add Hive partition columns not present in the physical schema
-            known = {f.name for f in unified_fields}
+            known = {f.name for f in unified_schema}
             rel = first_file.relative_to(path)
             for part in rel.parent.parts:
                 if "=" in part:
                     col = part.split("=", 1)[0]
                     if col not in known:
-                        unified_fields.append(pa.field(col, pa.string()))
+                        unified_schema = unified_schema.append(
+                            pa.field(col, pa.string())
+                        )
 
             dataset = pq.ParquetDataset(
-                str(path), filesystem=filesystem, schema=pa.schema(unified_fields)
+                str(path), filesystem=filesystem, schema=unified_schema
             )
 
         partition_columns: List[str] = []
@@ -485,7 +512,7 @@ class MixtureParquetStorage(StorageInterface[MixtureParquetStorageConfig]):
         pa.set_io_thread_count(pa_cpu_count)
 
         # Init parquet dataset reader
-        fragment_builder = ParquetFragmentStreamer(
+        fragment_builder = SchemaAwareFragmentStreamer(
             config=fragment_streaming_config
         ).build_pipeline(rank=gangs.dp.rank, world_size=gangs.dp.size)
 
