@@ -307,9 +307,14 @@ class WerCalculator:
                 return round(float(v), 6)
             return -1.0
 
+        # WER is stored as a raw (uer, wer) tuple before process_metric_values
+        wer_raw = values.get(self._wer_key, -1)
+        if isinstance(wer_raw, tuple):
+            _, wer_raw = wer_raw
+
         split_data = {
             "split": split_name,
-            "wer": _to_float(values.get(self._wer_key, -1)),
+            "wer": _to_float(wer_raw),
             "cer": _to_float(values.get(self._cer_key, -1)),
             "num_samples": len(self._sample_results),
             "sample_results": self._sample_results,

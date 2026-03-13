@@ -149,8 +149,8 @@ class Wav2Vec2AsrEvalUnit(EvalUnit[Seq2SeqBatch]):
 
     @override
     def process_metric_values(self, values: MutableMapping[str, object]) -> None:
-        self._criterion.process_metric_values(values)
         self._criterion.write_split_results(self._split_name, values)
+        self._criterion.process_metric_values(values)
 
     @property
     @override
