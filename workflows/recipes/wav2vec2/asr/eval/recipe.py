@@ -39,7 +39,7 @@ from omnilingual_asr.models.wav2vec2_llama.model import Wav2Vec2LlamaModel
 
 from ..criterion import Wav2Vec2AsrCriterion
 from ..dataset_selector import Wav2Vec2AsrDatasetSelector
-from ..wer_calculator import WerCalculator
+from ..wer_calculator import CerMetric, WerCalculator
 from .default_config import Wav2Vec2AsrEvalRecipeConfig
 
 
@@ -139,6 +139,7 @@ class Wav2Vec2AsrEvalUnit(EvalUnit[Seq2SeqBatch]):
     def prepare_metric_bag(self, metric_bag: MetricBag) -> None:
         self._criterion.prepare_metric_bag(metric_bag)
         metric_bag.add("wer", WerMetric())
+        metric_bag.add("cer", CerMetric())
 
     @override
     def process_batch(self, batch: Seq2SeqBatch, metric_bag: MetricBag) -> None:
