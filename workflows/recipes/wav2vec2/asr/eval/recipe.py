@@ -100,7 +100,7 @@ class Wav2Vec2AsrEvalRecipe(EvalRecipe):
         eval_splits = config.dataset.valid_split.split(",")
 
         for split in eval_splits:
-            eval_unit = Wav2Vec2AsrEvalUnit(valid_criterion)
+            eval_unit = Wav2Vec2AsrEvalUnit(valid_criterion, split_name=split)
             eval_units.append(eval_unit)
 
             storage_config.sync_mode = SyncMode.UNTIL_LAST
@@ -131,9 +131,11 @@ class Wav2Vec2AsrEvalUnit(EvalUnit[Seq2SeqBatch]):
     """
 
     _criterion: Wav2Vec2AsrCriterion
+    _split_name: str
 
-    def __init__(self, criterion: Wav2Vec2AsrCriterion) -> None:
+    def __init__(self, criterion: Wav2Vec2AsrCriterion, split_name: str = "") -> None:
         self._criterion = criterion
+        self._split_name = split_name
 
     @override
     def prepare_metric_bag(self, metric_bag: MetricBag) -> None:
@@ -147,7 +149,8 @@ class Wav2Vec2AsrEvalUnit(EvalUnit[Seq2SeqBatch]):
 
     @override
     def process_metric_values(self, values: MutableMapping[str, object]) -> None:
-        return self._criterion.process_metric_values(values)
+        self._criterion.process_metric_values(values)
+        self._criterion.write_split_results(self._split_name, values)
 
     @property
     @override

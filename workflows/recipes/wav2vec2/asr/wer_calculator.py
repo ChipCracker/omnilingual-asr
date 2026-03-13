@@ -6,7 +6,9 @@
 
 from __future__ import annotations
 
+import json
 from collections.abc import Iterable, MutableMapping, Sequence
+from pathlib import Path
 from typing import List, TextIO, cast, final
 
 import editdistance
@@ -88,6 +90,8 @@ class WerCalculator:
     _blank_label: int
     _ref_output_stream: TextIO | None
     _hyp_output_stream: TextIO | None
+    _output_dir: Path | None
+    _sample_results: list[dict]
     _wer_key: str = "wer"
     _uer_key: str = "uer"
     _cer_key: str = "cer"
@@ -99,12 +103,14 @@ class WerCalculator:
         blank_label: int = 0,
         ref_output_stream: TextIO | None = None,
         hyp_output_stream: TextIO | None = None,
+        output_dir: Path | None = None,
     ) -> None:
         """
         :param tokenizer: The tokenizer to encode target text.
         :param blank_label: The blank label in logits.
         :param ref_output_stream: The output stream to dump references.
         :param hyp_output_stream: The output stream to dump hypotheses.
+        :param output_dir: The output directory for JSON result files.
         """
         self._text_decoder = tokenizer.create_decoder(skip_special_tokens=True)
 
@@ -118,6 +124,8 @@ class WerCalculator:
         self._blank_label = blank_label
         self._ref_output_stream = ref_output_stream
         self._hyp_output_stream = hyp_output_stream
+        self._output_dir = output_dir
+        self._sample_results = []
 
     @classmethod
     def from_context(cls, context: RecipeContext) -> "WerCalculator":
@@ -157,6 +165,7 @@ class WerCalculator:
             tokenizer=context.default_tokenizer,
             ref_output_stream=ref_fp,  # type: ignore
             hyp_output_stream=hyp_fp,  # type: ignore
+            output_dir=context.output_dir if context.gangs.root.rank == 0 else None,
         )
 
     def compute_wer(
@@ -209,6 +218,10 @@ class WerCalculator:
         )
 
         metric_bag.get(self._cer_key, CerMetric).update(refs, hyps)
+
+        # Collect per-sample results for JSON output
+        for ref, hyp in zip(refs, hyps):
+            self._sample_results.append({"reference": ref, "hypothesis": hyp})
 
         try:
             # Write transcriptions if streams are provided
@@ -264,3 +277,68 @@ class WerCalculator:
             cer = cast(Tensor, cer_value)
             if cer >= 1.0:
                 values[self._cer_key] = cer
+
+    def write_split_results(
+        self, split_name: str, values: MutableMapping[str, object]
+    ) -> None:
+        """Write per-split JSON results and update the summary file."""
+        if self._output_dir is None:
+            return
+
+        # Compute per-sample WER/CER
+        for sample in self._sample_results:
+            ref, hyp = sample["reference"], sample["hypothesis"]
+            ref_words = ref.split()
+            hyp_words = hyp.split()
+            ref_chars = list(ref)
+            hyp_chars = list(hyp)
+            sample["wer"] = (
+                editdistance.eval(hyp_words, ref_words) / max(len(ref_words), 1)
+            )
+            sample["cer"] = (
+                editdistance.eval(hyp_chars, ref_chars) / max(len(ref_chars), 1)
+            )
+
+        # Extract aggregate metrics (convert tensors to floats)
+        def _to_float(v: object) -> float:
+            if isinstance(v, Tensor):
+                return round(v.item(), 6)
+            if isinstance(v, (int, float)):
+                return round(float(v), 6)
+            return -1.0
+
+        split_data = {
+            "split": split_name,
+            "wer": _to_float(values.get(self._wer_key, -1)),
+            "cer": _to_float(values.get(self._cer_key, -1)),
+            "num_samples": len(self._sample_results),
+            "sample_results": self._sample_results,
+        }
+
+        # Write per-split JSON
+        split_path = self._output_dir / f"{split_name}.json"
+        with open(split_path, "w", encoding="utf-8") as f:
+            json.dump(split_data, f, indent=2, ensure_ascii=False)
+        log.info(f"Wrote {len(self._sample_results)} samples to {split_path}")
+
+        # Update summary.json
+        summary_path = self._output_dir / "summary.json"
+        if summary_path.exists():
+            with open(summary_path, encoding="utf-8") as f:
+                summary = json.load(f)
+        else:
+            summary = {
+                "experiment": self._output_dir.name,
+                "results": {},
+            }
+
+        summary["results"][split_name] = {
+            "wer": split_data["wer"],
+            "cer": split_data["cer"],
+            "num_samples": split_data["num_samples"],
+        }
+
+        with open(summary_path, "w", encoding="utf-8") as f:
+            json.dump(summary, f, indent=2, ensure_ascii=False)
+
+        self._sample_results = []

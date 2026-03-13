@@ -145,6 +145,12 @@ class Wav2Vec2AsrCriterion:
         if self._wer_calculator:
             self._wer_calculator.process_metric_values(values)
 
+    def write_split_results(
+        self, split_name: str, values: MutableMapping[str, object]
+    ) -> None:
+        if self._wer_calculator:
+            self._wer_calculator.write_split_results(split_name, values)
+
     @property
     def model(self) -> RecipeModel:
         return self._model
