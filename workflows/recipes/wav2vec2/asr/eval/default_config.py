@@ -49,7 +49,9 @@ class Wav2Vec2AsrEvalDatasetSection(DatasetSection):
     )
     """Configuration for parquet-based dataset storage. Used when storage_mode is MIXTURE_PARQUET."""
 
-    asr_task_config: AsrTaskConfig = field(default_factory=AsrTaskConfig)
+    asr_task_config: AsrTaskConfig = field(
+        default_factory=lambda: AsrTaskConfig(example_shuffle_window=1)
+    )
     """Configuration for ASR task parameters. Used when task_mode is ASR."""
 
 
