@@ -96,7 +96,7 @@ class Wav2Vec2AsrRecipe(TrainRecipe):
 
         # fmt:off
         # considering None and empty string to be undefined
-        model_defined              = not (config.model.name == ""              or config.model.name is None)
+        model_defined              = not (config.model.name == ""              or config.model.name is None) or config.model.path is not None
         pretrained_encoder_defined = not (config.pretrained_encoder.name == "" or config.pretrained_encoder.name is None)
         training_fresh_asr_model       = pretrained_encoder_defined and not model_defined
         training_from_pretrained_model = model_defined
