@@ -33,3 +33,29 @@ tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/sylla
 name: de_syllable_2048
 tokenizer_family: syllable_tokenizer
 tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/syllable_bpe_2048.model
+
+---
+
+# German Unigram Tokenizers (3 vocab sizes)
+name: de_unigram_512
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/german_unigram_512.model
+
+---
+
+name: de_unigram_1024
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/german_unigram_1024.model
+
+---
+
+name: de_unigram_2048
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/german_unigram_2048.model
+
+---
+
+# Character-level Tokenizer
+name: de_char_64
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/german_char_64.model
