@@ -33,3 +33,48 @@ tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/sylla
 name: de_syllable_2048
 tokenizer_family: syllable_tokenizer
 tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/syllable_bpe_2048.model
+
+---
+
+# Phoneme BPE Tokenizers (3 vocab sizes)
+name: de_phone_bpe_128
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_bpe_128.model
+
+---
+
+name: de_phone_bpe_256
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_bpe_256.model
+
+---
+
+name: de_phone_bpe_512
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_bpe_512.model
+
+---
+
+# Phoneme Syllable-Constrained BPE Tokenizers (3 vocab sizes)
+name: de_phone_syllable_128
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_syllable_bpe_128.model
+
+---
+
+name: de_phone_syllable_256
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_syllable_bpe_256.model
+
+---
+
+name: de_phone_syllable_512
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_syllable_bpe_512.model
+
+---
+
+# Raw Phoneme Tokenizer
+name: de_phone_raw
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_raw.model
