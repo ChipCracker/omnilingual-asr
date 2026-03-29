@@ -78,3 +78,42 @@ tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone
 name: de_phone_raw
 tokenizer_family: char_tokenizer
 tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_raw.model
+
+---
+
+# Phone v2 BPE Tokenizers (phone-level, with protected multi-char phones)
+name: de_phone_bpe_v2_48
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_bpe_v2_48.model
+
+---
+name: de_phone_bpe_v2_64
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_bpe_v2_64.model
+
+---
+name: de_phone_bpe_v2_96
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_bpe_v2_96.model
+
+---
+# Phone v2 Syllable BPE Tokenizers
+name: de_phone_syllable_v2_48
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_syllable_bpe_v2_48.model
+
+---
+name: de_phone_syllable_v2_64
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_syllable_bpe_v2_64.model
+
+---
+name: de_phone_syllable_v2_96
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_syllable_bpe_v2_96.model
+
+---
+# Phone v2 Raw (word-level, each phone = one token)
+name: de_phone_raw_v2
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_raw_v2.model
