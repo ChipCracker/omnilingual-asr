@@ -139,17 +139,33 @@ tokenizer_family: char_tokenizer
 tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_raw_v2.model
 
 ---
-# Phone v2 Multi-Syllable BPE Tokenizers
-name: de_phone_multisyl_v2_512
-tokenizer_family: char_tokenizer
-tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_multisyl_bpe_v2_512.model
-
----
-name: de_phone_multisyl_v2_1024
-tokenizer_family: char_tokenizer
-tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_multisyl_bpe_v2_1024.model
-
----
+# Phone v2 Multi-Syllable BPE Tokenizers (full, 95% syllable coverage)
 name: de_phone_multisyl_v2_2048
 tokenizer_family: char_tokenizer
 tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_multisyl_bpe_v2_2048.model
+
+---
+name: de_phone_multisyl_v2_3072
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_multisyl_bpe_v2_3072.model
+
+---
+name: de_phone_multisyl_v2_4096
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_multisyl_bpe_v2_4096.model
+
+---
+# Phone v2 Multi-Syllable BPE Lite Tokenizers (top-100 syllables)
+name: de_phone_multisyl_lite_v2_512
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_multisyl_lite_bpe_v2_512.model
+
+---
+name: de_phone_multisyl_lite_v2_1024
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_multisyl_lite_bpe_v2_1024.model
+
+---
+name: de_phone_multisyl_lite_v2_2048
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_multisyl_lite_bpe_v2_2048.model
