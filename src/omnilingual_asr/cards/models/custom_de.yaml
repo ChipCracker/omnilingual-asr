@@ -150,9 +150,9 @@ tokenizer_family: char_tokenizer
 tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_multisyl_bpe_v2_3072.model
 
 ---
-name: de_phone_multisyl_v2_4096
+name: de_phone_multisyl_v2_3840
 tokenizer_family: char_tokenizer
-tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_multisyl_bpe_v2_4096.model
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_multisyl_bpe_v2_3840.model
 
 ---
 # Phone v2 Multi-Syllable BPE Lite Tokenizers (top-100 syllables)

@@ -253,8 +253,8 @@ def register_omnilingual_asr_wav2vec2_asr_configs(
         config.target_vocab_size = 3072
         return config
 
-    @arch("300m_4096", advanced=True)
-    def _300m_asr_4096(resolver: DependencyResolver) -> Wav2Vec2AsrConfig:
+    @arch("300m_3840", advanced=True)
+    def _300m_asr_3840(resolver: DependencyResolver) -> Wav2Vec2AsrConfig:
         config = get_config(resolver, Wav2Vec2AsrConfig, "base_10h")
         config.encoder_config = get_config(
             resolver, Wav2Vec2Config, "large_lv60k"
@@ -266,7 +266,7 @@ def register_omnilingual_asr_wav2vec2_asr_configs(
         config.use_masking = False
         config.max_temporal_mask_prob = 0.0
         config.max_spatial_mask_prob = 0.0
-        config.target_vocab_size = 4096
+        config.target_vocab_size = 3840
         return config
 
     @arch("1b_512", advanced=True)
