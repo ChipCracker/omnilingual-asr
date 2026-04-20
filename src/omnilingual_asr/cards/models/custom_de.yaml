@@ -139,6 +139,12 @@ tokenizer_family: char_tokenizer
 tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_raw_v2.model
 
 ---
+# Phone v2 Char Raw (single chars, multi-char phones split: aI -> a,I ; e: -> e,:)
+name: de_phone_char_raw_v2
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_char_raw_v2.model
+
+---
 # Phone v2 Multi-Syllable BPE Tokenizers (full, 95% syllable coverage)
 name: de_phone_multisyl_v2_2048
 tokenizer_family: char_tokenizer
