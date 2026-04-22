@@ -35,6 +35,38 @@ tokenizer_family: syllable_tokenizer
 tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/syllable_bpe_2048.model
 
 ---
+# Written Multi-Syllable BPE (full, 95% syllable coverage as UDS, cross-syllable merges)
+name: de_multisyl_2048
+tokenizer_family: syllable_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/multisyl_bpe_2048.model
+
+---
+name: de_multisyl_3072
+tokenizer_family: syllable_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/multisyl_bpe_3072.model
+
+---
+name: de_multisyl_3840
+tokenizer_family: syllable_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/multisyl_bpe_3840.model
+
+---
+# Written Multi-Syllable BPE Lite (top-100 syllables as UDS)
+name: de_multisyl_lite_512
+tokenizer_family: syllable_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/multisyl_lite_bpe_512.model
+
+---
+name: de_multisyl_lite_1024
+tokenizer_family: syllable_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/multisyl_lite_bpe_1024.model
+
+---
+name: de_multisyl_lite_2048
+tokenizer_family: syllable_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/multisyl_lite_bpe_2048.model
+
+---
 
 # Phoneme BPE Tokenizers (3 vocab sizes)
 name: de_phone_bpe_48
