@@ -191,3 +191,10 @@ tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone
 name: de_phone_multisyl_lite_v2_2048
 tokenizer_family: char_tokenizer
 tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone_multisyl_lite_bpe_v2_2048.model
+
+---
+# IPA tokenizer matching pklumpp/Wav2Vec2_CommonPhone vocabulary
+# (pad_id=0 + 101 IPA phones at ids 1..101 + unk_id=102)
+name: de_ipa_commonphone
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/ipa_commonphone.model
