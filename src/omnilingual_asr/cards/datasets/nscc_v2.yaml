@@ -1,0 +1,5 @@
+name: nscc_v2
+dataset_family: mixture_parquet_asr_dataset
+dataset_config:
+  data: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/nscc_v2/version=0
+tokenizer_ref: omniASR_tokenizer_v1
