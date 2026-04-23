@@ -198,3 +198,10 @@ tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/phone
 name: de_ipa_commonphone
 tokenizer_family: char_tokenizer
 tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/ipa_commonphone.model
+
+---
+# German SAMPA tokenizer (41 phones + base-alphabet single chars, zero-merge BPE)
+# Used by commonphone-de-sampa-ft: train on CommonPhone-de (IPA→SAMPA), eval on RVG1 KAN-tier.
+name: de_sampa
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/sampa_de.model
