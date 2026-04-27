@@ -1,0 +1,5 @@
+name: rvg1_de_ipa
+dataset_family: mixture_parquet_asr_dataset
+dataset_config:
+  data: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/rvg1_de_ipa/version=0
+tokenizer_ref: de_ipa_commonphone
