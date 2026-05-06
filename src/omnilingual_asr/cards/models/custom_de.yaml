@@ -205,3 +205,24 @@ tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/ipa_c
 name: de_sampa
 tokenizer_family: char_tokenizer
 tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/sampa_de.model
+
+---
+# Written Multi-Syllable BPE — NO syllable-boundary marker variant (Pitch A ablation)
+# Same top-100 syllables as UDS as de_multisyl_*, BUT trained on RAW (non-syllabified)
+# text. No pyphen syllabification at training-time → no hyphen-separator token in
+# the vocab, no <-> empty pieces in encoded output. Cleanly isolates the effect of
+# "syllable vocabulary" (UDS atoms) from the effect of the boundary marker.
+# Uses char_tokenizer (no pyphen at encode-time) instead of syllable_tokenizer.
+name: de_multisyl_nosep_512
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/multisyl_nosep_bpe_512.model
+
+---
+name: de_multisyl_nosep_1024
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/multisyl_nosep_bpe_1024.model
+
+---
+name: de_multisyl_nosep_2048
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/multisyl_nosep_bpe_2048.model
