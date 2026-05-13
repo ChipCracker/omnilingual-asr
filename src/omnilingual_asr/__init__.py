@@ -43,6 +43,10 @@ def setup_fairseq2_extension(container: DependencyContainer) -> None:
 
 
 def _register_tokenizers(container: DependencyContainer) -> None:
+    from omnilingual_asr.tokenizers.enum_phone_tokenizer import (
+        ENUM_PHONE_TOKENIZER_FAMILY,
+        load_enum_phone_tokenizer,
+    )
     from omnilingual_asr.tokenizers.syllable_tokenizer import (
         SYLLABLE_TOKENIZER_FAMILY,
         load_syllable_tokenizer,
@@ -54,6 +58,14 @@ def _register_tokenizers(container: DependencyContainer) -> None:
         kls=Tokenizer,
         config_kls=NoneType,
         loader=load_syllable_tokenizer,
+    )
+
+    register_tokenizer_family(
+        container,
+        ENUM_PHONE_TOKENIZER_FAMILY,
+        kls=Tokenizer,
+        config_kls=NoneType,
+        loader=load_enum_phone_tokenizer,
     )
 
 

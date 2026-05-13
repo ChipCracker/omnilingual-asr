@@ -269,6 +269,57 @@ def register_omnilingual_asr_wav2vec2_asr_configs(
         config.target_vocab_size = 3840
         return config
 
+    @arch("300m_1500", advanced=True)
+    def _300m_asr_1500(resolver: DependencyResolver) -> Wav2Vec2AsrConfig:
+        # de_syl_hybrid (SYL+PHN-BPE v2): SP-BPE vocab=1500
+        config = get_config(resolver, Wav2Vec2AsrConfig, "base_10h")
+        config.encoder_config = get_config(
+            resolver, Wav2Vec2Config, "large_lv60k"
+        ).encoder_config
+        config.encoder_config.dropout_p = 0.0
+        config.encoder_config.attn_dropout_p = 0.0
+        config.encoder_config.ffn_inner_dropout_p = 0.1
+        config.encoder_config.layer_drop_p = 0.1
+        config.use_masking = False
+        config.max_temporal_mask_prob = 0.0
+        config.max_spatial_mask_prob = 0.0
+        config.target_vocab_size = 1500
+        return config
+
+    @arch("300m_4096", advanced=True)
+    def _300m_asr_4096(resolver: DependencyResolver) -> Wav2Vec2AsrConfig:
+        # de_phon_free (PPC-BPE v2) and de_phon_bound (PP+SL-BPE v2): vocab=4096
+        config = get_config(resolver, Wav2Vec2AsrConfig, "base_10h")
+        config.encoder_config = get_config(
+            resolver, Wav2Vec2Config, "large_lv60k"
+        ).encoder_config
+        config.encoder_config.dropout_p = 0.0
+        config.encoder_config.attn_dropout_p = 0.0
+        config.encoder_config.ffn_inner_dropout_p = 0.1
+        config.encoder_config.layer_drop_p = 0.1
+        config.use_masking = False
+        config.max_temporal_mask_prob = 0.0
+        config.max_spatial_mask_prob = 0.0
+        config.target_vocab_size = 4096
+        return config
+
+    @arch("300m_5000", advanced=True)
+    def _300m_asr_5000(resolver: DependencyResolver) -> Wav2Vec2AsrConfig:
+        # de_ortho_bpe (TXT-BPE) and de_ortho_syl (PSC-BPE): vocab=5000
+        config = get_config(resolver, Wav2Vec2AsrConfig, "base_10h")
+        config.encoder_config = get_config(
+            resolver, Wav2Vec2Config, "large_lv60k"
+        ).encoder_config
+        config.encoder_config.dropout_p = 0.0
+        config.encoder_config.attn_dropout_p = 0.0
+        config.encoder_config.ffn_inner_dropout_p = 0.1
+        config.encoder_config.layer_drop_p = 0.1
+        config.use_masking = False
+        config.max_temporal_mask_prob = 0.0
+        config.max_spatial_mask_prob = 0.0
+        config.target_vocab_size = 5000
+        return config
+
     @arch("300m_103", advanced=True)
     def _300m_asr_103(resolver: DependencyResolver) -> Wav2Vec2AsrConfig:
         # IPA CommonPhone: pad(0) + 101 IPA + unk(102) = 103 classes

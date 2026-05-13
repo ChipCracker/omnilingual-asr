@@ -120,6 +120,12 @@ class MixtureParquetStorageConfig(StorageConfig):
     split_column: str = "split"
     """Name of the column containing split information."""
 
+    text_column: str = "text"
+    """Name of the physical parquet column whose contents should be exposed
+    as the canonical 'text' field after `rename_columns`. Lets a single
+    parquet dataset expose multiple text encodings (e.g. ``text`` /
+    ``phones_word`` / ``phones_syl``) and pick one per training config."""
+
     num_prefetch: int = 1
     """Number of batches to prefetch."""
 
@@ -260,7 +266,7 @@ class MixtureParquetStorage(StorageInterface[MixtureParquetStorageConfig]):
     def create_raw_data_pipeline(self, split: str, gangs: Gangs) -> DataPipelineBuilder:
 
         config = self.config
-        schema: LangASRSchema = LangASRSchema()
+        schema: LangASRSchema = LangASRSchema(text=config.text_column)
 
         is_train_streaming = MixtureParquetStorage.is_train_streaming(
             split=split, sync_mode=config.sync_mode

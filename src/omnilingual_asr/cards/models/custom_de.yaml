@@ -226,3 +226,66 @@ tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/multi
 name: de_multisyl_nosep_2048
 tokenizer_family: char_tokenizer
 tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/multisyl_nosep_bpe_2048.model
+
+---
+# ============================================================================
+# cv-tok-analysis tokenizer family (CV-DE-trained, used by cv-tok-w2v-ft-es)
+# 8 trainable variants from the 9-way tokenizer-comparison study. SP models
+# are the v2 retrains on the new ASR-input format (phones concat within a
+# word, single space at word boundary, `|` between syllables inside a word).
+# Enum-vocab tokenizers (de_phon_atom, de_phon_atom_fused, de_syl200_phn)
+# use the new enum_phone_tokenizer family.
+# ============================================================================
+
+# Ortho-BPE: plain BPE on raw German lowercased text (5000 vocab).
+name: de_ortho_bpe
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/cv_analysis/tokenizers/txt_bpe.model
+
+---
+# Ortho-syllabified BPE (PSC): pyphen-syllabified text + `-` UDS (5000 vocab).
+name: de_ortho_syl
+tokenizer_family: syllable_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/cv_analysis/tokenizers/psc_bpe.model
+
+---
+# Phon-free (PPC-BPE v2): BPE over phones concat within word, word-boundary
+# space — cross-syllable merges allowed (no `|` UDS). Vocab=4096.
+name: de_phon_free
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/cv_analysis/tokenizers/ppc_bpe_v2.model
+
+---
+# Phon-bound (PP+SL-BPE v2): BPE over phones with `|` UDS between syllables
+# (no cross-syllable merges) + word-boundary space. Vocab=4096.
+name: de_phon_bound
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/cv_analysis/tokenizers/pp_sl_bpe_v2.model
+
+---
+# Phon-atom (P+SL): enumeration vocab — atomic SAMPA phones + `|` syllable
+# marker. ~53 entries. No BPE.
+name: de_phon_atom
+tokenizer_family: enum_phone_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/cv_analysis/p_sl_vocab.json
+
+---
+# Phon-atom-fused: enumeration vocab — atomic phones + phone-followed-by-`|`
+# fused variants. ~99 entries. No BPE.
+name: de_phon_atom_fused
+tokenizer_family: enum_phone_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/cv_analysis/p_sl_fused_vocab.json
+
+---
+# Syl-hybrid (SYL+PHN-BPE v2): top-N syllables (90% coverage) as UDS over
+# char-stream + `|` UDS, BPE merges within syllables. Vocab=1500.
+name: de_syl_hybrid
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/cv_analysis/tokenizers/syl_phn_bpe_v2.model
+
+---
+# Syl200-phn: enumeration vocab — top-200 syllables + atomic-phone fallback
+# for syllables not in the top-200. ~252 entries. No BPE.
+name: de_syl200_phn
+tokenizer_family: enum_phone_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/cv_analysis/syl200_phn_vocab.json
