@@ -208,20 +208,37 @@ class WerCalculator:
         refs = [self._text_decoder(s) for s in ref_seqs]
         hyps = [self._text_decoder(s) for s in hyp_seqs]
 
+        ref_ids_list = ref_seqs.cpu().tolist()    # padded list[list[int]]
+        hyp_ids_list = hyp_seqs.cpu().tolist()
+
         metric_bag.get(self._wer_key, WerMetric).update(
             refs,
-            ref_seqs.cpu().tolist(),  # type: ignore
+            ref_ids_list,  # type: ignore
             ref_seqs_layout,
             hyps,
-            hyp_seqs.cpu().tolist(),  # type: ignore
+            hyp_ids_list,  # type: ignore
             hyp_seqs_layout,
         )
 
         metric_bag.get(self._cer_key, CerMetric).update(refs, hyps)
 
-        # Collect per-sample results for JSON output
-        for ref, hyp in zip(refs, hyps):
-            self._sample_results.append({"reference": ref, "hypothesis": hyp})
+        # Collect per-sample results for JSON output. Token-ID sequences are
+        # kept (trimmed to their real length, pad removed) so we can compute
+        # TER (Token Error Rate) at write-time.
+        ref_lens = list(ref_seqs_layout.seq_lens)
+        hyp_lens = list(hyp_seqs_layout.seq_lens)
+        for i, (ref, hyp) in enumerate(zip(refs, hyps)):
+            ref_ids = ref_ids_list[i][: ref_lens[i]] if i < len(ref_lens) else ref_ids_list[i]
+            hyp_ids = hyp_ids_list[i][: hyp_lens[i]] if i < len(hyp_lens) else hyp_ids_list[i]
+            # Drop pad tokens defensively (in case seq_lens included padding).
+            ref_ids = [t for t in ref_ids if t != self._pad_idx]
+            hyp_ids = [t for t in hyp_ids if t != self._pad_idx]
+            self._sample_results.append({
+                "reference": ref,
+                "hypothesis": hyp,
+                "ref_ids": ref_ids,
+                "hyp_ids": hyp_ids,
+            })
 
         try:
             # Write transcriptions if streams are provided
@@ -285,7 +302,9 @@ class WerCalculator:
         if self._output_dir is None:
             return
 
-        # Compute per-sample WER/CER
+        # Compute per-sample WER / CER / TER.
+        total_token_err = 0
+        total_ref_tokens = 0
         for sample in self._sample_results:
             ref, hyp = sample["reference"], sample["hypothesis"]
             ref_words = ref.split()
@@ -298,6 +317,22 @@ class WerCalculator:
             sample["cer"] = (
                 editdistance.eval(hyp_chars, ref_chars) / max(len(ref_chars), 1)
             )
+
+            # TER on tokenizer-piece IDs (set in compute_wer above).
+            ref_ids = sample.get("ref_ids") or []
+            hyp_ids = sample.get("hyp_ids") or []
+            ed = editdistance.eval(hyp_ids, ref_ids)
+            sample["ter"] = ed / max(len(ref_ids), 1)
+            total_token_err += ed
+            total_ref_tokens += len(ref_ids)
+            # The raw ID arrays are heavy (dozens of ints per sample); strip
+            # them from the on-disk JSON now that we've used them.
+            sample.pop("ref_ids", None)
+            sample.pop("hyp_ids", None)
+
+        ter_aggregate = (
+            total_token_err / total_ref_tokens if total_ref_tokens else -1.0
+        )
 
         # Extract aggregate metrics (convert tensors to floats)
         def _to_float(v: object) -> float:
@@ -316,6 +351,7 @@ class WerCalculator:
             "split": split_name,
             "wer": _to_float(wer_raw),
             "cer": _to_float(values.get(self._cer_key, -1)),
+            "ter": round(ter_aggregate * 100.0, 6) if ter_aggregate >= 0 else -1.0,
             "num_samples": len(self._sample_results),
             "sample_results": self._sample_results,
         }
@@ -340,6 +376,7 @@ class WerCalculator:
         summary["results"][split_name] = {
             "wer": split_data["wer"],
             "cer": split_data["cer"],
+            "ter": split_data["ter"],
             "num_samples": split_data["num_samples"],
         }
 
