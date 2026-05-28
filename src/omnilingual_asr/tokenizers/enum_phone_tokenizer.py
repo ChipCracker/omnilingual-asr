@@ -55,10 +55,13 @@ SAMPA_MULTI_CHAR: Final[frozenset[str]] = frozenset({
 _KIND_P_SL: Final = "p_sl"
 _KIND_P_SL_FUSED: Final = "p_sl_fused"
 _KIND_SYL_PHN: Final = "syl_phn"
+_KIND_PHI_CHUNK: Final = "phi_chunk"
 
 
 def _detect_encoder_kind(meta: dict) -> str:
     """Pick which encode logic applies based on which fields are present."""
+    if "chunk_pattern" in meta:
+        return _KIND_PHI_CHUNK
     if "top_n_syllables" in meta:
         return _KIND_SYL_PHN
     if meta.get("marker_id") is not None:
@@ -92,6 +95,7 @@ class EnumPhoneEncoder(TokenEncoder):
         unk_id: int,
         encoder_kind: str,
         syllable_set: frozenset[str] | None,
+        chunk_pattern: list[int] | None = None,
         *,
         device: Device | None = None,
         pin_memory: bool = False,
@@ -101,6 +105,7 @@ class EnumPhoneEncoder(TokenEncoder):
         self._unk = unk_id
         self._kind = encoder_kind
         self._syl_set = syllable_set or frozenset()
+        self._chunk_pattern = tuple(chunk_pattern) if chunk_pattern else ()
         self._device = device
         self._pin_memory = pin_memory
 
@@ -109,7 +114,39 @@ class EnumPhoneEncoder(TokenEncoder):
             return self._encode_p_sl(text)
         if self._kind == _KIND_P_SL_FUSED:
             return self._encode_p_sl_fused(text)
+        if self._kind == _KIND_PHI_CHUNK:
+            return self._encode_phi_chunk(text)
         return self._encode_syl_phn(text)
+
+    def _encode_phi_chunk(self, text: str) -> list[int]:
+        """Deterministic chunking of the per-word phon stream by a cyclical
+        pattern of chunk-lengths.
+
+        Used by the phi-chunk tokenizer family (philovar / phihivar). The
+        vocab itself is shared; only `chunk_pattern` in JSON metadata
+        differs. The encoder splits each whitespace-separated word into
+        atomic SAMPA phones (via _split_sampa), then emits successive
+        chunks of length given by chunk_pattern[i % len(chunk_pattern)].
+        Word-end remainder shorter than the next pattern entry is emitted
+        at whatever length fits (1/2/3 — all admitted in the shared vocab).
+        """
+        ids: list[int] = []
+        pattern = self._chunk_pattern
+        if not pattern:
+            return ids
+        for word in text.split():
+            phons = _split_sampa(word)
+            i = 0
+            chunk_idx = 0
+            n = len(phons)
+            while i < n:
+                target_len = pattern[chunk_idx % len(pattern)]
+                actual_len = min(target_len, n - i)
+                chunk = "".join(phons[i:i + actual_len])
+                ids.append(self._tok2id.get(chunk, self._unk))
+                i += actual_len
+                chunk_idx += 1
+        return ids
 
     def _encode_p_sl(self, text: str) -> list[int]:
         """Longest-match: emit atomic phones and standalone `|` tokens.
@@ -248,6 +285,7 @@ class EnumPhoneTokenizer(Tokenizer):
         pad_id: int,
         encoder_kind: str,
         syllable_set: frozenset[str] | None,
+        chunk_pattern: list[int] | None = None,
     ) -> None:
         self._vocab = vocab
         self._tok2id = {t: i for i, t in enumerate(vocab)}
@@ -255,6 +293,7 @@ class EnumPhoneTokenizer(Tokenizer):
         self._pad_id = pad_id
         self._encoder_kind = encoder_kind
         self._syl_set = syllable_set
+        self._chunk_pattern = chunk_pattern
         self._vocab_info = VocabularyInfo(
             size=len(vocab),
             unk_idx=unk_id,
@@ -285,6 +324,7 @@ class EnumPhoneTokenizer(Tokenizer):
             self._unk_id,
             self._encoder_kind,
             self._syl_set,
+            chunk_pattern=self._chunk_pattern,
             device=device,
             pin_memory=pin_memory,
         )
@@ -299,6 +339,7 @@ class EnumPhoneTokenizer(Tokenizer):
             self._unk_id,
             self._encoder_kind,
             self._syl_set,
+            chunk_pattern=self._chunk_pattern,
             device=device,
             pin_memory=pin_memory,
         )
@@ -329,10 +370,12 @@ def load_enum_phone_tokenizer(path: Path, config: None) -> Tokenizer:
         syllable_set: frozenset[str] | None = frozenset(vocab[n_specials:n_specials + top_n])
     else:
         syllable_set = None
+    chunk_pattern = meta.get("chunk_pattern") if encoder_kind == _KIND_PHI_CHUNK else None
     return EnumPhoneTokenizer(
         vocab=vocab,
         unk_id=unk_id,
         pad_id=pad_id,
         encoder_kind=encoder_kind,
         syllable_set=syllable_set,
+        chunk_pattern=chunk_pattern,
     )

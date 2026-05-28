@@ -289,3 +289,23 @@ tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/cv_analysis/toke
 name: de_syl200_phn
 tokenizer_family: enum_phone_tokenizer
 tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/cv_analysis/syl200_phn_vocab.json
+
+---
+# Phon-variance philovar: phi_chunk tokenizer, constant 2-phon chunks
+# (pattern=[2]). Vocab is shared with phihivar (5000 pieces: 2 specials +
+# 51 1-phon + 1334 2-phon + 3613 top-freq 3-phon). Encoding emits chunks
+# of length 2 with 1-phon fallback at word ends. emit_mean_phi ≈ 1.82,
+# emit_std_phi ≈ 0.39 on cv_de_train. See scripts/phon_variance/.
+name: de_phon_var_philovar_p2
+tokenizer_family: enum_phone_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/phon_variance/variance_subsets_phon/philovar_phi_chunk_p2.json
+
+---
+# Phon-variance phihivar: phi_chunk tokenizer, alternating chunks per pattern
+# [3,1,1,1,3]. Same 5000-piece vocab as philovar — only chunk_pattern metadata
+# differs. The pattern was empirically tuned to match philovar's emit_mean
+# within 2% while maximising emit_std (σ-ratio ≈ 2.49). See
+# scripts/phon_variance/RESEARCH.md.
+name: de_phon_var_phihivar_p3_1_1_1_3
+tokenizer_family: enum_phone_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/phon_variance/variance_subsets_phon/phihivar_phi_chunk_p3_1_1_1_3.json
