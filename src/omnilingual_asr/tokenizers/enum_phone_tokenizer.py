@@ -129,12 +129,18 @@ class EnumPhoneEncoder(TokenEncoder):
         chunks of length given by chunk_pattern[i % len(chunk_pattern)].
         Word-end remainder shorter than the next pattern entry is emitted
         at whatever length fits (1/2/3 — all admitted in the shared vocab).
+
+        Syllable markers ('-', '|') are stripped before splitting, so the
+        same code path handles input from cv_swc_de_sampa.phones_word
+        ("tsi:t ?OYC bIt@") and rvg1_de_phone.text ("gu:t di:-z@ vO-x@")
+        interchangeably — only word boundaries (spaces) are semantic.
         """
         ids: list[int] = []
         pattern = self._chunk_pattern
         if not pattern:
             return ids
-        for word in text.split():
+        cleaned = text.replace("-", "").replace("|", "")
+        for word in cleaned.split():
             phons = _split_sampa(word)
             i = 0
             chunk_idx = 0
