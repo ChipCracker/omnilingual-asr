@@ -309,3 +309,12 @@ tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/phon_variance/va
 name: de_phon_var_phihivar_p3_1_1_1_3
 tokenizer_family: enum_phone_tokenizer
 tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/phon_variance/variance_subsets_phon/phihivar_phi_chunk_p3_1_1_1_3.json
+
+---
+# Phon-variance atom control: phi_chunk tokenizer, pattern=[1] (pure single
+# phonemes, variance=0). Same 5000-piece vocab as philovar/phihivar — only
+# chunk_pattern differs. Control for the "short tokens drive the effect"
+# confound: max single-phon share, zero variance, ~0 roundtrip floor.
+name: de_phon_var_atom_p1
+tokenizer_family: enum_phone_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/phon_variance/variance_subsets_phon/atom_phi_chunk_p1.json
