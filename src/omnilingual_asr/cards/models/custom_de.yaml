@@ -318,3 +318,13 @@ tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/phon_variance/va
 name: de_phon_var_atom_p1
 tokenizer_family: enum_phone_tokenizer
 tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/phon_variance/variance_subsets_phon/atom_phi_chunk_p1.json
+
+---
+# Phon-variance granularity sweep, k=3: phi_chunk tokenizer, pattern=[3]
+# (constant 3-phon chunks, variance=0, mean phi≈2.6). Optimal 5000-piece
+# vocab for this pattern (roundtrip floor 2.4%). Third point on the
+# granularity curve [1]=atom / [2]=philovar / [3]=gran3 at matched zero
+# variance — isolates mean token length as the factor.
+name: de_phon_var_gran3_p3
+tokenizer_family: enum_phone_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/phon_variance/variance_subsets_phon/gran3_phi_chunk_p3.json
