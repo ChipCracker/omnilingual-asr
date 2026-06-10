@@ -328,3 +328,21 @@ tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/phon_variance/va
 name: de_phon_var_gran3_p3
 tokenizer_family: enum_phone_tokenizer
 tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/phon_variance/variance_subsets_phon/gran3_phi_chunk_p3.json
+
+---
+# Ortho syllable-unit (whole-syllable-or-char, no BPE) — 79% syllable coverage on cv_swc-train
+name: de_syllable_unit_512_cov79
+tokenizer_family: syllable_unit_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/syllable_unit_512_cov79.json
+
+---
+# Ortho syllable-unit (whole-syllable-or-char, no BPE) — 89% syllable coverage on cv_swc-train
+name: de_syllable_unit_1024_cov89
+tokenizer_family: syllable_unit_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/syllable_unit_1024_cov89.json
+
+---
+# Ortho syllable-unit (whole-syllable-or-char, no BPE) — 95% syllable coverage on cv_swc-train
+name: de_syllable_unit_2048_cov95
+tokenizer_family: syllable_unit_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/syllable_unit_2048_cov95.json

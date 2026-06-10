@@ -51,6 +51,10 @@ def _register_tokenizers(container: DependencyContainer) -> None:
         SYLLABLE_TOKENIZER_FAMILY,
         load_syllable_tokenizer,
     )
+    from omnilingual_asr.tokenizers.syllable_unit_tokenizer import (
+        SYLLABLE_UNIT_TOKENIZER_FAMILY,
+        load_syllable_unit_tokenizer,
+    )
 
     register_tokenizer_family(
         container,
@@ -58,6 +62,14 @@ def _register_tokenizers(container: DependencyContainer) -> None:
         kls=Tokenizer,
         config_kls=NoneType,
         loader=load_syllable_tokenizer,
+    )
+
+    register_tokenizer_family(
+        container,
+        SYLLABLE_UNIT_TOKENIZER_FAMILY,
+        kls=Tokenizer,
+        config_kls=NoneType,
+        loader=load_syllable_unit_tokenizer,
     )
 
     register_tokenizer_family(
