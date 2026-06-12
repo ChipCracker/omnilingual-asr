@@ -360,6 +360,20 @@ def register_wav2vec2_llama_configs(container: DependencyContainer) -> None:
         config.wav2vec2_asr_config = get_config(resolver, Wav2Vec2AsrConfig, "300m")
         return config
 
+    @arch("300m_v2_ufm", advanced=True)
+    def _300m_llama_v2_ufm(
+        resolver: DependencyResolver,
+    ) -> Wav2Vec2LlamaConfig:
+        # 300m_v2 with the omniASR written-v2 vocab extended by the KSOF
+        # disfluency markers <uf> (id 10288) and <m> (id 10289). Only
+        # llama_config.vocab_size matters for model construction (the encoder
+        # is built without a CTC head); the lid_marker special token moves to
+        # embedding id 10290.
+        config = _7b_llama_v2(resolver)
+        config.wav2vec2_asr_config = get_config(resolver, Wav2Vec2AsrConfig, "300m")
+        config.llama_config.vocab_size = 10290
+        return config
+
     # Base streaming model flavors
 
     @arch("300m_unlimited_v2", advanced=True)

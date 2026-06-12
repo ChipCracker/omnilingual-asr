@@ -379,3 +379,11 @@ tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/multi
 name: de_syllable_unit_512_cov79_ufm
 tokenizer_family: syllable_unit_tokenizer
 tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/syllable_unit_512_cov79_ufm.json
+
+---
+
+# omniASR written-v2 vocab (10288) + <uf>(10288) + <m>(10289) = 10290; produced
+# by scripts/extend_tokenizer_ufm.py from the cached upstream SPM model.
+name: omniASR_tokenizer_written_v2_ufm
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/omniASR_written_v2_ufm.model
