@@ -346,3 +346,36 @@ tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/sylla
 name: de_syllable_unit_2048_cov95
 tokenizer_family: syllable_unit_tokenizer
 tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/syllable_unit_2048_cov95.json
+
+---
+
+# --- KSOF stutter experiments: 512 vocab + <uf>(512) + <m>(513) = 514 ---------
+# Same SPM/JSON assets as the 512 variants, extended in place by
+# scripts/extend_tokenizer_ufm.py (existing piece ids unchanged).
+name: de_bpe_512_ufm
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/german_bpe_512_ufm.model
+
+---
+
+name: de_syllable_512_ufm
+tokenizer_family: syllable_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/syllable_bpe_512_ufm.model
+
+---
+
+name: de_multisyl_512_ufm
+tokenizer_family: syllable_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/multisyl_bpe_512_ufm.model
+
+---
+
+name: de_multisyl_nosep_512_ufm
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/multisyl_nosep_bpe_512_ufm.model
+
+---
+
+name: de_syllable_unit_512_cov79_ufm
+tokenizer_family: syllable_unit_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/syllable_unit_512_cov79_ufm.json
