@@ -388,6 +388,15 @@ def register_wav2vec2_llama_configs(container: DependencyContainer) -> None:
         config.wav2vec2_asr_config = get_config(resolver, Wav2Vec2AsrConfig, "300m")
         config.llama_config.vocab_size = 514
         config.wav2vec2_asr_config.target_vocab_size = 514
+        # Special-token indices must match the _ar tokenizer layout
+        # (unk=0, pad=1, bos=<s>=512, eos=</s>=513), NOT the written_v2 defaults
+        # (bos=0/eos=2/unk=3). target_vocab_info is built from these config
+        # fields (factory.py:260), and the beam search reads bos/eos from it.
+        config.unk_idx = 0
+        config.bos_idx = 512
+        config.eos_idx = 513
+        config.pad_idx = 1
+        config.llama_config.pad_idx = 1
         return config
 
     # Base streaming model flavors
