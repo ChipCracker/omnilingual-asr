@@ -374,6 +374,22 @@ def register_wav2vec2_llama_configs(container: DependencyContainer) -> None:
         config.llama_config.vocab_size = 10290
         return config
 
+    @arch("300m_v2_tok514", advanced=True)
+    def _300m_llama_v2_tok514(
+        resolver: DependencyResolver,
+    ) -> Wav2Vec2LlamaConfig:
+        # 300m_v2 LLM repurposed for the custom 512-vocab CTC tokenizers in the
+        # RVG1 LLM tokenizer sweep. Vocab 514 = 512 pieces + <s>(bos,512) +
+        # </s>(eos,513) added by scripts/build_ar_tokenizers.py (BOS/EOS are
+        # mandatory for the autoregressive beam search). The token embedding +
+        # output head are reinitialised from scratch for this vocab by
+        # scripts/reinit_llm_head.py; the encoder + decoder body are kept.
+        config = _7b_llama_v2(resolver)
+        config.wav2vec2_asr_config = get_config(resolver, Wav2Vec2AsrConfig, "300m")
+        config.llama_config.vocab_size = 514
+        config.wav2vec2_asr_config.target_vocab_size = 514
+        return config
+
     # Base streaming model flavors
 
     @arch("300m_unlimited_v2", advanced=True)

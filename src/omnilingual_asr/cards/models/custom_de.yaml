@@ -387,3 +387,31 @@ tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/sylla
 name: omniASR_tokenizer_written_v2_ufm
 tokenizer_family: char_tokenizer
 tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/omniASR_written_v2_ufm.model
+
+---
+
+# --- RVG1 LLM tokenizer sweep: CTC tokenizers + <s>/</s> for AR decoding ------
+# Vocab 514 (512 + bos<s>(512) + eos</s>(513)), built by
+# scripts/build_ar_tokenizers.py. Used only with the wav2vec2_llama
+# 300m_v2_tok514 arch (reinitialised head).
+name: de_bpe_512_ar
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/german_bpe_512_ar.model
+
+---
+
+name: de_syllable_512_ar
+tokenizer_family: syllable_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/syllable_bpe_512_ar.model
+
+---
+
+name: de_multisyl_512_ar
+tokenizer_family: syllable_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/multisyl_bpe_512_ar.model
+
+---
+
+name: de_multisyl_nosep_512_ar
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/multisyl_nosep_bpe_512_ar.model
