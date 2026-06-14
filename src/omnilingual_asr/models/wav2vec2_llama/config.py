@@ -412,6 +412,24 @@ def register_wav2vec2_llama_configs(container: DependencyContainer) -> None:
         config.llama_config.pad_idx = 1
         return config
 
+    @arch("1b_v2_tok514", advanced=True)
+    def _1b_llama_v2_tok514(
+        resolver: DependencyResolver,
+    ) -> Wav2Vec2LlamaConfig:
+        # 1B-encoder counterpart of 300m_v2_tok514 for the RVG1 LLM tokenizer
+        # sweep (custom 512-vocab CTC tokenizers + <s>/<\\/s> = vocab 514,
+        # reinit head). Only the wav2vec2 encoder differs (1b); decoder/head 4096.
+        config = _7b_llama_v2(resolver)
+        config.wav2vec2_asr_config = get_config(resolver, Wav2Vec2AsrConfig, "1b")
+        config.llama_config.vocab_size = 514
+        config.wav2vec2_asr_config.target_vocab_size = 514
+        config.unk_idx = 0
+        config.bos_idx = 512
+        config.eos_idx = 513
+        config.pad_idx = 1
+        config.llama_config.pad_idx = 1
+        return config
+
     # Base streaming model flavors
 
     @arch("300m_unlimited_v2", advanced=True)
