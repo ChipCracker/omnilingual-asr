@@ -374,6 +374,19 @@ def register_wav2vec2_llama_configs(container: DependencyContainer) -> None:
         config.llama_config.vocab_size = 10290
         return config
 
+    @arch("1b_v2_ufm", advanced=True)
+    def _1b_llama_v2_ufm(
+        resolver: DependencyResolver,
+    ) -> Wav2Vec2LlamaConfig:
+        # 1b_v2 LLM with the omniASR written-v2 vocab extended by the KSOF
+        # disfluency markers <uf> (10288) and <m> (10289). The LLaMA decoder
+        # (and thus the 4096-dim embedding/head) is identical across LLM sizes;
+        # only the wav2vec2 encoder differs (here: 1b).
+        config = _7b_llama_v2(resolver)
+        config.wav2vec2_asr_config = get_config(resolver, Wav2Vec2AsrConfig, "1b")
+        config.llama_config.vocab_size = 10290
+        return config
+
     @arch("300m_v2_tok514", advanced=True)
     def _300m_llama_v2_tok514(
         resolver: DependencyResolver,
