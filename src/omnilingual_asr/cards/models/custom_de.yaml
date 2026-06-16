@@ -415,3 +415,33 @@ tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/multi
 name: de_multisyl_nosep_512_ar
 tokenizer_family: char_tokenizer
 tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/multisyl_nosep_bpe_512_ar.model
+
+---
+
+# Subword-regularized variants (train-time SentencePiece sampling; eval deterministic).
+# de_syllable_512_drop = de_syllable-512 vocab + BPE-dropout (experiment #1 syl512-drop).
+name: de_syllable_512_drop
+tokenizer_family: sampling_syllable_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/syllable_bpe_512.model
+
+---
+
+# de_unigram_512 = unigram-LM SentencePiece, V=512 (experiment #3 control, deterministic).
+name: de_unigram_512
+tokenizer_family: char_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/german_unigram_512.model
+
+---
+
+# de_unigram_512_sample = same unigram-512 vocab + lattice sampling (experiment #3 uni512-sample).
+name: de_unigram_512_sample
+tokenizer_family: sampling_sentencepiece
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/german_unigram_512.model
+
+---
+
+# de_morph_bpe_512 = SP-BPE over Morfessor-morph-segmented text (experiment #6 de_morph_bpe).
+# Loader also reads the sibling morph_bpe_512.morfessor model.
+name: de_morph_bpe_512
+tokenizer_family: morph_tokenizer
+tokenizer: /nfs1/scratch/students/witzlch88229/data/omni-asr-ft/tokenizers/morph_bpe_512.model

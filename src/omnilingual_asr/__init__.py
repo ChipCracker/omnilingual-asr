@@ -55,6 +55,16 @@ def _register_tokenizers(container: DependencyContainer) -> None:
         SYLLABLE_UNIT_TOKENIZER_FAMILY,
         load_syllable_unit_tokenizer,
     )
+    from omnilingual_asr.tokenizers.dropout_tokenizers import (
+        SAMPLING_SENTENCEPIECE_FAMILY,
+        SAMPLING_SYLLABLE_TOKENIZER_FAMILY,
+        load_sampling_sentencepiece_tokenizer,
+        load_sampling_syllable_tokenizer,
+    )
+    from omnilingual_asr.tokenizers.morph_tokenizer import (
+        MORPH_TOKENIZER_FAMILY,
+        load_morph_tokenizer,
+    )
 
     register_tokenizer_family(
         container,
@@ -78,6 +88,30 @@ def _register_tokenizers(container: DependencyContainer) -> None:
         kls=Tokenizer,
         config_kls=NoneType,
         loader=load_enum_phone_tokenizer,
+    )
+
+    register_tokenizer_family(
+        container,
+        SAMPLING_SENTENCEPIECE_FAMILY,
+        kls=Tokenizer,
+        config_kls=NoneType,
+        loader=load_sampling_sentencepiece_tokenizer,
+    )
+
+    register_tokenizer_family(
+        container,
+        SAMPLING_SYLLABLE_TOKENIZER_FAMILY,
+        kls=Tokenizer,
+        config_kls=NoneType,
+        loader=load_sampling_syllable_tokenizer,
+    )
+
+    register_tokenizer_family(
+        container,
+        MORPH_TOKENIZER_FAMILY,
+        kls=Tokenizer,
+        config_kls=NoneType,
+        loader=load_morph_tokenizer,
     )
 
 
